@@ -120,6 +120,10 @@ func swSpanToSpan(traceID string, segmentID string, span *agentV3.SpanObject, de
 	// parent spanid = -1, means(root span) no parent span in skywalking,so just make otlp's parent span id empty.
 	if span.ParentSpanId != -1 {
 		dest.SetParentSpanID(segmentIDToSpanID(segmentID, uint32(span.GetParentSpanId())))
+	} else {
+		if len(span.Refs) == 1 {
+			dest.SetParentSpanID(segmentIDToSpanID(span.Refs[0].GetParentTraceSegmentId(), uint32(span.Refs[0].GetParentSpanId())))
+		}
 	}
 
 	dest.SetName(span.OperationName)
